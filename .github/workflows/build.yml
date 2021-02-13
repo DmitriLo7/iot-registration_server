@@ -1,4 +1,4 @@
-name: Rust application
+name: build
 
 on:
   pull_request:
@@ -11,9 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust_version: ['stable', 'beta', 'nightly']
     services:
       mysql:
         image: mariadb
@@ -33,17 +30,17 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: |
-          rustup install ${{matrix.rust_version }}
-          rustup default ${{matrix.rust_version }}
-          cargo install diesel_cli
-      - name: Check builds
-        run: |
-          cargo build --features mysql
-          cargo build --features postgres
-          cargo build --features sqlite
-      - name: Run integration tests
-        run: |
-          ./run_tests.sh
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        rustup install stable
+        rustup default stable
+        cargo install diesel_cli
+    - name: Check builds
+      run: |
+        cargo build --features mysql
+        cargo build --features postgres
+        cargo build --features sqlite
+    - name: Run integration tests
+      run: |
+        ./run_tests.sh
